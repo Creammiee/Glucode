@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -6,7 +7,7 @@ SECRET_KEY = 'django-insecure-#jm#pfj@hhghpm8&g%q1nd6!nl24g+qh!0=o6&noz29x0-!oh$
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'glucode.onrender.com']
 
 
 # Application definition
