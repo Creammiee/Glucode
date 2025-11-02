@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Glucode Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --light-yellow: #fcfcf1;
+            --pink: #ce7d99;
+            --medium-pink: #c65b86;
+            --hot-pink: #bf537f;
+            --ash-pink: #b4758d;
+            --gray-pink: #9a506c;
+            --magenta: #7e3c65;
+            --dark-magenta: #6b2752;
+            --deep-magenta: #672f4d;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--light-yellow), var(--pink), var(--medium-pink));
+        }
+
+        .card {
+            background: var(--light-yellow);
+            box-shadow: 0 10px 25px rgba(107, 39, 82, 0.2);
+        }
+
+        .btn-login {
+            background-color: var(--deep-magenta);
+        }
+
+        .btn-login:hover {
+            background-color: var(--magenta);
+        }
+
+        .text-title {
+            color: var(--deep-magenta);
+        }
+
+        .link {
+            color: var(--medium-pink);
+        }
+
+        .link:hover {
+            color: var(--hot-pink);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center">
+
+    <div class="card rounded-2xl p-8 w-full max-w-sm">
+        <h2 class="text-3xl font-bold text-center text-title mb-6">Glucode Login</h2>
+
+        {% if form.errors %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4 text-center">
+                Invalid username or password
+            </div>
+        {% endif %}
+
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Username</label>
+                <input type="text" name="username" placeholder="Enter your username"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--medium-pink)] focus:border-transparent"
+                    required autofocus>
+            </div>
+
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Password</label>
+                <input type="password" name="password" placeholder="Enter your password"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--medium-pink)] focus:border-transparent"
+                    required>
+            </div>
+
+            <button type="submit"
+                class="w-full btn-login text-white font-semibold py-2 rounded-lg transition duration-200 hover:scale-[1.02]">
+                Login
+            </button>
+        </form>
+
+        <p class="text-sm text-center mt-6 text-gray-600">
+            Don’t have an account?
+            <a href="#" class="link font-semibold hover:underline">Register</a>
+        </p>
+    </div>
+
+</body>
+</html>

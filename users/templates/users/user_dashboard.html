@@ -1,0 +1,226 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --light-yellow: #fcfcf1;
+            --pink: #ce7d99;
+            --medium-pink: #c65b86;
+            --hot-pink: #bf537f;
+            --ash-pink: #b4758d;
+            --gray-pink: #9a506c;
+            --magenta: #7e3c65;
+            --dark-magenta: #6b2752;
+            --deep-magenta: #672f4d;
+        }
+
+        body {
+            font-family: 'Helvetica', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, var(--light-yellow), var(--pink), var(--medium-pink));
+        }
+
+        header.dashboard-header {
+            background-color: var(--deep-magenta);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 0 0 12px 12px;
+        }
+        header.dashboard-header .logout-btn {
+            background-color: var(--magenta);
+            padding: 6px 12px;
+            border-radius: 6px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        header.dashboard-header .logout-btn:hover {
+            background-color: var(--hot-pink);
+        }
+
+        main {
+            display: flex;
+            padding: 15px;
+            gap: 15px;
+        }
+
+        .input-panel, .forecast-panel {
+            background: var(--light-yellow);
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 15px;
+        }
+
+        .input-panel { flex: 1; }
+        .forecast-panel { flex: 2; }
+
+        .input-panel h2, .forecast-panel h2 { color: var(--deep-magenta); margin-top: 0; }
+
+        .input-panel form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .input-panel input, .input-panel select, .input-panel button {
+            padding: 8px;
+            font-size: 0.95rem;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .input-panel button {
+            background-color: var(--deep-magenta);
+            color: white;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .input-panel button:hover { background-color: var(--magenta); }
+
+        .forecast-graph { width: 100%; height: 300px; }
+
+        .bottom-panel {
+            margin: 15px;
+            background: var(--light-yellow);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .bottom-panel table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        .bottom-panel th, .bottom-panel td {
+            padding: 6px;
+            text-align: center;
+            border: 1px solid var(--gray-pink);
+        }
+        .bottom-panel th {
+            background-color: var(--hot-pink);
+            color: white;
+        }
+
+        .error-msg { color: #ff3b3b; margin-bottom: 8px; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+<header class="dashboard-header">
+    <div>Welcome, {{ request.user.username }}</div>
+    <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+</header>
+
+<main>
+    <div class="input-panel">
+        <h2>Input Data</h2>
+        {% if error %}
+            <div class="error-msg">{{ error }}</div>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <label>Temperature (°C)</label>
+            <input type="number" step="0.1" name="temperature" value="36.0" required>
+
+            <label>Heart Rate (bpm)</label>
+            <input type="number" name="heart_rate" value="70" required>
+
+            <label>Interbeat Interval (s)</label>
+            <input type="number" step="0.01" name="interbeat_interval" value="0.85" required>
+
+            <label>Model</label>
+            <select name="model_choice">
+                <option value="ARIMA" {% if selected_model == 'ARIMA' %}selected{% endif %}>ARIMA</option>
+                <option value="SARIMAX" {% if selected_model == 'SARIMAX' %}selected{% endif %}>SARIMAX</option>
+            </select>
+
+            <button type="submit">Predict & Forecast</button>
+        </form>
+    </div>
+
+    <div class="forecast-panel">
+        <h2>Forecasted Glucose</h2>
+        <canvas id="forecastChart" class="forecast-graph"></canvas>
+    </div>
+</main>
+
+<div class="bottom-panel">
+    <h2>Past Glucose Records</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Temp</th>
+                <th>HR</th>
+                <th>IBI</th>
+                <th>Model</th>
+                <th>Glucose</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in past_records %}
+            <tr>
+                <td>{{ record.recorded_at|date:"Y-m-d H:i" }}</td>
+                <td>{{ record.temperature }}</td>
+                <td>{{ record.heart_rate }}</td>
+                <td>{{ record.interbeat_interval }}</td>
+                <td>{{ record.chosen_model }}</td>
+                <td>{{ record.predicted_glucose|floatformat:2 }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">No records yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    const ctx = document.getElementById('forecastChart').getContext('2d');
+    const forecastData = {
+        labels: {{ horizons|safe }},
+        datasets: [{
+            label: 'Forecasted Glucose (mg/dL)',
+            data: {{ forecasted_values|safe }},
+            borderColor: '#672f4d',          // deep-magenta line
+            backgroundColor: 'rgba(103, 47, 77, 0.2)', // transparent fill
+            fill: true,
+            tension: 0.3,
+            pointRadius: 4,
+            pointBackgroundColor: '#7e3c65' // magenta points
+        }]
+    };
+
+    const config = {
+        type: 'line',
+        data: forecastData,
+        options: {
+            responsive: true,
+            plugins: { legend: { display: true } },
+            scales: {
+                x: { title: { display: true, text: 'Time (minutes)' } },
+                y: { title: { display: true, text: 'Glucose (mg/dL)' }, beginAtZero: false }
+            }
+        }
+    };
+
+    new Chart(ctx, config);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create User</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --light-yellow: #fcfcf1;
+            --pink: #ce7d99;
+            --medium-pink: #c65b86;
+            --hot-pink: #bf537f;
+            --ash-pink: #b4758d;
+            --gray-pink: #9a506c;
+            --magenta: #7e3c65;
+            --dark-magenta: #6b2752;
+            --deep-magenta: #672f4d;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--light-yellow), var(--pink), var(--medium-pink));
+        }
+
+        .card {
+            background: var(--light-yellow);
+            box-shadow: 0 10px 25px rgba(107, 39, 82, 0.2);
+        }
+
+        .btn-primary {
+            background-color: var(--deep-magenta);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--magenta);
+        }
+
+        .text-title {
+            color: var(--deep-magenta);
+        }
+
+        .link {
+            color: var(--medium-pink);
+        }
+
+        .link:hover {
+            color: var(--hot-pink);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center">
+
+<div class="card rounded-2xl p-8 w-full max-w-md">
+    <h2 class="text-3xl font-bold text-center text-title mb-6">Create User</h2>
+
+    {% if form.errors %}
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4">
+            Please fix the errors below.
+        </div>
+    {% endif %}
+
+    <form method="POST" class="space-y-4">
+        {% csrf_token %}
+
+        <div>
+            {{ form.username.label_tag }}
+            {{ form.username }}
+            {% for error in form.username.errors %}
+                <p class="text-red-600 text-sm">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <div>
+            {{ form.password1.label_tag }}
+            {{ form.password1 }}
+            {% for error in form.password1.errors %}
+                <p class="text-red-600 text-sm">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <div>
+            {{ form.password2.label_tag }}
+            {{ form.password2 }}
+            {% for error in form.password2.errors %}
+                <p class="text-red-600 text-sm">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <button type="submit"
+            class="w-full btn-primary text-white font-semibold py-2 rounded-lg transition duration-200 hover:scale-[1.02]">
+            Create User
+        </button>
+    </form>
+
+    <p class="text-center mt-4">
+        <a href="{% url 'dashboard' %}" class="link font-semibold hover:underline">Back to Dashboard</a>
+    </p>
+</div>
+
+</body>
+</html>

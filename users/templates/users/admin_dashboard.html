@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard - Glucode</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --light-yellow: #fcfcf1;
+            --pink: #ce7d99;
+            --medium-pink: #c65b86;
+            --hot-pink: #bf537f;
+            --ash-pink: #b4758d;
+            --gray-pink: #9a506c;
+            --magenta: #7e3c65;
+            --dark-magenta: #6b2752;
+            --deep-magenta: #672f4d;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--light-yellow), var(--pink), var(--medium-pink));
+        }
+
+        .card {
+            background: var(--light-yellow);
+            box-shadow: 0 10px 25px rgba(107, 39, 82, 0.2);
+        }
+
+        .btn-primary {
+            background-color: var(--deep-magenta);
+        }
+        .btn-primary:hover {
+            background-color: var(--magenta);
+        }
+
+        .header-title {
+            color: var(--deep-magenta);
+        }
+
+        th {
+            background-color: var(--hot-pink);
+            color: white;
+        }
+
+        td, th {
+            border: 1px solid var(--gray-pink);
+        }
+    </style>
+</head>
+<body class="min-h-screen p-6">
+
+    <header class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold header-title">Admin Dashboard</h1>
+        <a href="{% url 'logout' %}" class="btn-primary text-white px-4 py-2 rounded-lg">Logout</a>
+    </header>
+
+    <section class="mb-8 card p-6 rounded-2xl">
+        <h2 class="text-2xl font-semibold mb-4 header-title">Users</h2>
+        <a href="{% url 'create_user' %}" class="btn-primary text-white px-3 py-1 rounded-lg mb-4 inline-block">Create New User</a>
+        <div class="overflow-x-auto">
+            <table class="min-w-full table-auto rounded-lg">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2">ID</th>
+                        <th class="px-4 py-2">Username</th>
+                        <th class="px-4 py-2">Email</th>
+                        <th class="px-4 py-2">Superuser</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr class="text-center hover:bg-[var(--ash-pink)]">
+                            <td class="px-4 py-2">{{ user.id }}</td>
+                            <td class="px-4 py-2">{{ user.username }}</td>
+                            <td class="px-4 py-2">{{ user.email }}</td>
+                            <td class="px-4 py-2">{{ user.is_superuser }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-4">No users found</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="card p-6 rounded-2xl">
+        <h2 class="text-2xl font-semibold mb-4 header-title">Glucose Records</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full table-auto rounded-lg">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2">User</th>
+                        <th class="px-4 py-2">Temperature</th>
+                        <th class="px-4 py-2">Heart Rate</th>
+                        <th class="px-4 py-2">Interbeat Interval</th>
+                        <th class="px-4 py-2">Model</th>
+                        <th class="px-4 py-2">Predicted Glucose</th>
+                        <th class="px-4 py-2">Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in records %}
+                        <tr class="text-center hover:bg-[var(--ash-pink)]">
+                            <td class="px-4 py-2">{{ record.user.username }}</td>
+                            <td class="px-4 py-2">{{ record.temperature }}</td>
+                            <td class="px-4 py-2">{{ record.heart_rate }}</td>
+                            <td class="px-4 py-2">{{ record.interbeat_interval }}</td>
+                            <td class="px-4 py-2">{{ record.chosen_model }}</td>
+                            <td class="px-4 py-2">{{ record.predicted_glucose|floatformat:2 }}</td>
+                            <td class="px-4 py-2">{{ record.recorded_at }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-4">No records found</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</body>
+</html>

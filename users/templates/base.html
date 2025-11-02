@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gluecode Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            lightyellow: '#fcfcf1',
+            pink: '#ce7d99',
+            mediumpink: '#c65b86',
+            hotpink: '#bf537f',
+            ashpink: '#b4758d',
+            graypink: '#9a506c',
+            magenta: '#7e3c65',
+            darkmagenta: '#6b2752',
+            deepmagenta: '#672f4d',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-lightyellow">
+  <header class="bg-deepmagenta text-white p-4 flex justify-between items-center">
+    <h1 class="text-xl font-bold">Gluecode</h1>
+    {% if user.is_authenticated %}
+      <div class="flex items-center gap-4">
+        <span>Hi, {{ user.username }}</span>
+        <form action="{% url 'logout' %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="bg-hotpink hover:bg-pink text-white px-3 py-1 rounded">Logout</button>
+        </form>
+      </div>
+    {% endif %}
+  </header>
+
+  <main class="p-6">
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

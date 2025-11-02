@@ -1,0 +1,87 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create User - Glucode</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --light-yellow: #fcfcf1;
+            --pink: #ce7d99;
+            --medium-pink: #c65b86;
+            --hot-pink: #bf537f;
+            --ash-pink: #b4758d;
+            --gray-pink: #9a506c;
+            --magenta: #7e3c65;
+            --dark-magenta: #6b2752;
+            --deep-magenta: #672f4d;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--light-yellow), var(--pink), var(--medium-pink));
+        }
+
+        .card {
+            background: var(--light-yellow);
+            box-shadow: 0 10px 25px rgba(107, 39, 82, 0.2);
+        }
+
+        .btn-primary {
+            background-color: var(--deep-magenta);
+        }
+        .btn-primary:hover {
+            background-color: var(--magenta);
+        }
+
+        .header-title {
+            color: var(--deep-magenta);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-6">
+
+    <div class="card p-8 rounded-2xl w-full max-w-md">
+        <h2 class="text-3xl font-bold text-center header-title mb-6">Create New User</h2>
+
+        {% if error %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4 text-center">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Username</label>
+                <input type="text" name="username" placeholder="Enter username"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--medium-pink)] focus:border-transparent"
+                    required>
+            </div>
+
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Email</label>
+                <input type="email" name="email" placeholder="Enter email"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--medium-pink)] focus:border-transparent"
+                    required>
+            </div>
+
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Password</label>
+                <input type="password" name="password" placeholder="Enter password"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--medium-pink)] focus:border-transparent"
+                    required>
+            </div>
+
+            <button type="submit" class="w-full btn-primary text-white font-semibold py-2 rounded-lg transition duration-200 hover:scale-[1.02]">
+                Create User
+            </button>
+        </form>
+
+        <p class="text-sm text-center mt-6 text-gray-600">
+            Back to <a href="{% url 'dashboard' %}" class="underline font-semibold">Dashboard</a>
+        </p>
+    </div>
+
+</body>
+</html>
